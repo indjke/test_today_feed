@@ -1,0 +1,8 @@
+% layout 'default';
+% title 'Today';
+<p>
+Hello, World!
+</p>
+<pre>
+<%= dumper $result %>
+</pre>
