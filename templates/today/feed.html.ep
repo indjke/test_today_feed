@@ -1,7 +1,16 @@
 % layout 'default';
 % title 'Today';
 <p>
-Hello, World!
+<form action="" method="GET">
+<select name="country">
+  % for my $cc ( @{$c->config->{countries}} ) {
+  <option value="<%= $cc %>"><%= uc($cc) %></option>
+  % }
+</select>
+<input type="text" name="date">
+<input type="submit">
+</p>
+</form>
 </p>
 <pre>
 <%= dumper $result %>
