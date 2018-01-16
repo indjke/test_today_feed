@@ -1,2 +1,1 @@
-# test_today_feed
-TodayFeed
+sudo cpanm IO::Socket::SSL
