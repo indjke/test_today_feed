@@ -1,0 +1,41 @@
+#!/usr/bin/env perl
+
+use uni::perl ':dumper';
+
+use FindBin;
+BEGIN { unshift @INC, "$FindBin::Bin/../lib" }
+
+use iTunes::Today;
+use Mojolicious::Plugin::Config;
+
+use DBI;
+
+my ( $confpath, $start_date, $end_date ) = @ARGV;
+my $config = Mojolicious::Plugin::Config->load( $confpath );
+say dumper { config => $config };
+
+#my $dbh = DBI->connect(); TODO
+
+say dumper [ $start_date, $end_date ];
+
+$start_date ||= 'get_today_date()';
+$end_date   ||= $start_date;
+
+my $parser = iTunes::Today->new( $config->{itunes_today} );
+
+for my $country ( @{$config->{countries}} ) {
+  my $result = $parser->parse(
+    country    => $country,
+    start_date => $start_date,
+    end_date   => $end_date
+  );
+
+  say dumper $result;
+
+  foreach my $story ( $result->{res_json}[0]{stories} ) {
+    say qq~state \$sth = \$dbh->prepare( 'INSERT ... country=?' )~;
+    say qq~\$sth->execute( '$country' )~;
+  }
+}
+
+1;

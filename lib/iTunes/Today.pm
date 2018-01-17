@@ -17,8 +17,6 @@ sub new {
 sub parse {
   my ($self, %p) = @_;
 
-  $p{start_date} = $p{end_date} = delete $p{date};
-
   my $url = $self->{base_url} . '?' . (
     join '&', (
       map { $_ . '=' . $p{$_} } keys %p
