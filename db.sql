@@ -1,11 +1,10 @@
-CREATE TABLE IF NOT EXISTS `stories` (
-  `id` bigint NOT NULL,
-  `label` text NOT NULL,
+CREATE TABLE `stories` (
+  `id` bigint(20) NOT NULL,
+  `label` text,
   `date` date NOT NULL,
   `country` varchar(2) NOT NULL,
-  `json_source` TEXT,
-  PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8;
-
-CREATE INDEX date_idx ON stories (date);
-CREATE INDEX country_idx ON stories (country);
+  `json_source` text,
+  PRIMARY KEY (`id`),
+  KEY `date_idx` (`date`),
+  KEY `country_idx` (`country`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -4,6 +4,10 @@ use Mojo::Base 'Mojolicious::Controller';
 use iTunes::Today; # TODO: remove
 use uni::perl ':dumper';
 
+use Mojo::mysql;
+use POSIX qw(strftime);
+use Mojo::JSON qw(from_json);
+
 sub feed {
   my $self = shift;
 
@@ -12,17 +16,17 @@ sub feed {
     ( $feed_params->{$param} = uc $self->param($param) ) =~ s/\s+//g;
   }
 
-#--- TODO: вместо этого запрос к БД
+  $feed_params->{date} ||= strftime("%F",localtime(time()));
 
-  $feed_params->{start_date} = $feed_params->{end_date} =
-    delete $feed_params->{date};
+  my $config = $self->app->config('db');
 
-  my $parser = iTunes::Today->new( $self->app->config('itunes_today') );
-  my $result = $parser->parse(%$feed_params);
+  my $mysql = Mojo::mysql->strict_mode('mysql://'. $config->{user} .':'. $config->{pass}
+    .'@'. $config->{host} .'/'. $config->{name});
 
-#---
+  my $result = $mysql->db->query('select * from stories where country = ? and date = ?',
+    $feed_params->{country}, $feed_params->{date})->hashes->map(sub{ from_json $_->{json_source} });
 
-  $self->render(result => $result);
+  $self->render(result => $result, feed_params => $feed_params);
 }
 
 1;

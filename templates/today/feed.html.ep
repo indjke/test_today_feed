@@ -1,17 +1,44 @@
 % layout 'default';
 % title 'Today';
-<p>
-<form action="" method="GET">
-<select name="country">
-  % for my $cc ( @{$c->config->{countries}} ) {
-  <option value="<%= $cc %>"><%= uc($cc) %></option>
-  % }
-</select>
-<input type="text" name="date">
-<input type="submit">
-</p>
+
+<form class="ui form" style="margin:1em">
+  <div class="fields">
+    <div class="field">
+        <label>Country</label>
+        <select name="country">
+            % for my $cc ( @{$c->config->{countries}} ) {
+                <option value="<%= $cc %>"
+                    <%== 'selected="selected"' if $feed_params->{country} eq uc($cc) %>
+                ><%= uc($cc) %></option>
+            % }
+            </div>
+        </select>
+    </div>
+    <div class="field">
+        <label>Date</label>
+        <input name="date" placeholder="YYYY-MM-DD" type="text" value="<%= $feed_params->{date} %>">
+    </div>
+  </div>
+  <button class="ui button" type="submit">Submit</button>
 </form>
-</p>
-<pre>
-<%= dumper $result %>
-</pre>
+
+<div class="ui cards" style="margin:1em">
+% for my $story ( @$result ) {
+  <div class="card">
+    <div class="image">
+      <img class="top ui medium bordered image" src="<%= $story->{apps}[0]{icon_url} %>">
+    </div>
+    <div class="content">
+      <div class="header">
+        <%= $story->{label} %>
+      </div>
+      <div class="meta">
+        <%= $story->{title} %></h3>
+      </div>
+      <div class="description">
+        <%= $story->{short_description} %>
+      </div>
+    </div>
+  </div>
+% }
+</div>

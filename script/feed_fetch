@@ -7,19 +7,22 @@ BEGIN { unshift @INC, "$FindBin::Bin/../lib" }
 
 use iTunes::Today;
 use Mojolicious::Plugin::Config;
-
-use DBI;
+use Mojo::mysql;
+use Mojo::JSON qw(encode_json);
+use POSIX qw(strftime);
 
 my ( $confpath, $start_date, $end_date ) = @ARGV;
 my $config = Mojolicious::Plugin::Config->load( $confpath );
-say dumper { config => $config };
+#say dumper { config => $config };
 
-#my $dbh = DBI->connect(); TODO
+my $mysql = Mojo::mysql->strict_mode('mysql://'. $config->{db}{user} .':'. $config->{db}{pass}
+  .'@'. $config->{db}{host} .'/'. $config->{db}{name});
+say dumper $mysql->db->query('select now() as ctime')->hash;
+
+$start_date ||= strftime("%F",localtime(time()));
+$end_date   ||= $start_date;
 
 say dumper [ $start_date, $end_date ];
-
-$start_date ||= 'get_today_date()';
-$end_date   ||= $start_date;
 
 my $parser = iTunes::Today->new( $config->{itunes_today} );
 
@@ -30,11 +33,22 @@ for my $country ( @{$config->{countries}} ) {
     end_date   => $end_date
   );
 
-  say dumper $result;
+  #say dumper $result;
 
-  foreach my $story ( $result->{res_json}[0]{stories} ) {
-    say qq~state \$sth = \$dbh->prepare( 'INSERT ... country=?' )~;
-    say qq~\$sth->execute( '$country' )~;
+  foreach my $story ( @{$result->{res_json}[0]{stories}} ) {
+    next if $mysql->db->query('select count(1) as "exists" from stories where id = ?', $story->{id})->hash->{exists};
+
+    say 'inserting';
+    my $json_source = encode_json($story);
+    	say dumper $story; 
+    	say dumper $json_source;
+
+    eval { $mysql->db->query('insert into stories (id,label,date,country,json_source) values (?,?,?,?,?)',
+      $story->{id}, $story->{label},
+      [split( 'T', $result->{res_json}[0]{date} )]->[0],
+      $result->{res_json}[0]{country},
+      $json_source
+    ) };
   }
 }
 
