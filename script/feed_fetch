@@ -9,7 +9,7 @@ use iTunes::Today;
 use Mojolicious::Plugin::Config;
 use Mojo::mysql;
 use Mojo::JSON qw(encode_json);
-use POSIX qw(strftime);
+use DateTime;
 
 my ( $confpath, $start_date, $end_date ) = @ARGV;
 my $config = Mojolicious::Plugin::Config->load( $confpath );
@@ -17,9 +17,8 @@ my $config = Mojolicious::Plugin::Config->load( $confpath );
 
 my $mysql = Mojo::mysql->strict_mode('mysql://'. $config->{db}{user} .':'. $config->{db}{pass}
   .'@'. $config->{db}{host} .'/'. $config->{db}{name});
-say dumper $mysql->db->query('select now() as ctime')->hash;
 
-$start_date ||= strftime("%F",localtime(time()));
+$start_date ||= DateTime->now->ymd;
 $end_date   ||= $start_date;
 
 say dumper [ $start_date, $end_date ];
@@ -49,6 +48,8 @@ for my $country ( @{$config->{countries}} ) {
       $result->{res_json}[0]{country},
       $json_source
     ) };
+    
+    warn $@ if $@;
   }
 }
 

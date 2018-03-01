@@ -2,6 +2,7 @@ package iTunes::Today;
 
 use uni::perl ':dumper';
 use Encode;
+use URI;
 
 use Mojo::UserAgent;
 
@@ -17,20 +18,19 @@ sub new {
 sub parse {
   my ($self, %p) = @_;
 
-  my $url = $self->{base_url} . '?' . (
-    join '&', (
-      map { $_ . '=' . $p{$_} } keys %p
-    )
-  );
+  my $url = URI->new( $self->{base_url} );
+  $url->query_form( \%p );
+
+    say $url->as_string;
 
   my $ua = $self->{ua_list};
   my $ua_string = $ua->[rand(@$ua)];
 
-  my $res_json = $self->{ua_obj}->get($url, {'User-Agent' => $ua_string})->result->json;
+  my $res_json = $self->{ua_obj}->get($url->as_string, {'User-Agent' => $ua_string})->result->json;
 
   return {
     params    => \%p,
-    url       => $url,
+    url       => $url->as_string,
     ua_string => $ua_string,
     res_json  => $res_json,
   };
