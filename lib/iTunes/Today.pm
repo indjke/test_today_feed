@@ -24,7 +24,7 @@ sub parse {
     say $url->as_string;
 
     my $ua        = $self->{ua_list};
-    my $ua_string = $ua->[ rand( @$ua ) ];
+    my $ua_string = $ua->[ rand(@$ua) ];
 
     my $res_json = $self->{ua_obj}->get( $url->as_string, { 'User-Agent' => $ua_string } )->result->json;
 

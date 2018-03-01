@@ -10,8 +10,8 @@ sub feed {
     my $self = shift;
 
     my $feed_params;
-    for my $param ( qw( country date ) ) {
-        ( $feed_params->{$param} = uc $self->param( $param ) ) =~ s/\s+//g;
+    for my $param (qw( country date )) {
+        ( $feed_params->{$param} = uc $self->param($param) ) =~ s/\s+//g;
     }
 
     $feed_params->{date} ||= DateTime->now->ymd;

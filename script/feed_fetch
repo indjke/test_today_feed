@@ -12,7 +12,7 @@ use Mojo::JSON qw( encode_json );
 use DateTime;
 
 my ( $confpath, $start_date, $end_date ) = @ARGV;
-my $config = Mojolicious::Plugin::Config->load( $confpath );
+my $config = Mojolicious::Plugin::Config->load($confpath);
 
 #say dumper { config => $config };
 
@@ -45,7 +45,7 @@ for my $country ( @{ $config->{countries} } ) {
           ->hash->{exists};
 
         say 'inserting';
-        my $json_source = encode_json( $story );
+        my $json_source = encode_json($story);
         say dumper $story;
         say dumper $json_source;
 

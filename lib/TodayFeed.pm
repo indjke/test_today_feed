@@ -7,7 +7,7 @@ sub startup {
     my $self = shift;
 
     # Load configuration from hash returned by "my_app.conf"
-    my $config = $self->plugin( 'Config' );
+    my $config = $self->plugin('Config');
 
     # Mysql helper
     $self->helper(
@@ -25,8 +25,8 @@ sub startup {
     my $r = $self->routes;
 
     # Normal route to controller
-    $r->get( '/' )->to( 'example#welcome' );
-    $r->get( '/today' )->to( 'today#feed' );
+    $r->get('/')->to('example#welcome');
+    $r->get('/today')->to('today#feed');
 }
 
 1;
