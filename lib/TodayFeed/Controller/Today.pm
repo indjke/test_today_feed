@@ -1,7 +1,6 @@
 package TodayFeed::Controller::Today;
 use Mojo::Base 'Mojolicious::Controller';
 
-use iTunes::Today; # TODO: remove
 use uni::perl ':dumper';
 
 use DateTime;
